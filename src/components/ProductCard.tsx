@@ -7,8 +7,7 @@ interface Iprops {
 }
 
 const ProductCard = ({ productLists }: Iprops) => {
-  const { imageURL, title, description, category, price, colors } =
-    productLists;
+  const { imageURL, title, description, category, price } = productLists;
   return (
     <div
       className="

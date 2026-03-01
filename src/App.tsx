@@ -1,4 +1,5 @@
 import ProductCard from "./components/ProductCard";
+import Model from "./components/UI/Model";
 import { productList } from "./data/index";
 const App = () => {
   const rernderList = productList.map((product) => (
@@ -22,6 +23,7 @@ const App = () => {
       >
         {rernderList}
       </div>
+      <Model></Model>
     </main>
   );
 };

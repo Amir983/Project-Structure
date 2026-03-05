@@ -5,7 +5,8 @@ import { formInputsList, productList } from "./data/index";
 import Button from "./components/UI/Button";
 import Input from "./components/UI/Input";
 import type { IProduct } from "./interfaces/interface";
-
+import { Validtion } from "./validation";
+import ErrorMessage from "./components/ErrorMas";
 const App = () => {
   const defobj = {
     title: "",
@@ -20,6 +21,12 @@ const App = () => {
   };
   /* --------------------------State-------------------------------- */
   const [product, setproduct] = useState<IProduct>(defobj);
+  const [errors, seterrors] = useState({
+    title: "",
+    description: "",
+    imageURL: "",
+    price: "",
+  });
   const [isOpen, setIsOpen] = useState(false);
   /*-----------------------------HNDLER-------------------------------- */
   function closeModal() {
@@ -35,9 +42,26 @@ const App = () => {
       ...product,
       [name]: value,
     });
+    seterrors({
+      ...errors,
+      [name]: "",
+    });
+    console.log("errors after:", errors);
   };
-  function onsubmitHandler(event: FormEvent<HTMLDivElement>): void {
+  function onsubmitHandler(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
+    const { title, description, imageURL, price } = product;
+    const errors = Validtion({
+      title,
+      description,
+      imageURL,
+      price,
+    });
+    const hasErrors = Object.values(errors).every((value) => value === "");
+    if (!hasErrors) {
+      seterrors(errors);
+      return;
+    }
   }
 
   function Cancelhandler(): void {
@@ -60,17 +84,18 @@ const App = () => {
         value={product[form.name]}
         onChange={producthandler}
       ></Input>
+      <ErrorMessage msg={errors[form.name]} />
     </div>
   ));
 
   return (
     <main className="container ">
-      <div className="">
+      <div className=" flex items-center justify-center">
         <Button
-          className="bg-indigo-600 hover:bg-indigo-400 "
+          className="bg-indigo-600 hover:bg-indigo-400 w-52 "
           onClick={openModal}
         >
-          ADD PRODUCT
+          BULID PRODUCT
         </Button>
       </div>
       <div
@@ -95,21 +120,25 @@ const App = () => {
         closeModal={closeModal}
         title={"ADD A NEW PRODUCT"}
       >
-        <div className="space-y-2" onSubmit={onsubmitHandler}>
+        <form className="space-y-2" onSubmit={onsubmitHandler}>
           {renderform}
 
           <div className="flex items-center space-x-2 ">
-            <Button className="bg-indigo-600 hover:bg-indigo-400">
+            <Button
+              className="bg-indigo-600 hover:bg-indigo-400"
+              width={"w-full"}
+            >
               Submit
             </Button>
             <Button
               className="bg-gray-700 hover:bg-gray-500"
               onClick={Cancelhandler}
+              width={"w-full"}
             >
               Cancel
             </Button>
           </div>
-        </div>
+        </form>
       </Model>
     </main>
   );

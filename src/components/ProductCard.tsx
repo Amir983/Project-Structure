@@ -50,8 +50,12 @@ const ProductCard = ({ productLists }: Iprops) => {
       </div>
 
       <div className="flex items-center justify-between space-x-2 mt-5 {/* margin من فوق */}">
-        <Button className="bg-indigo-600 ">Edit</Button>
-        <Button className="bg-red-600 ">Delete</Button>
+        <Button className="bg-indigo-600 " width={"w-full"}>
+          Edit
+        </Button>
+        <Button className="bg-red-600 " width={"w-full"}>
+          Delete
+        </Button>
       </div>
     </div>
   );

@@ -2,12 +2,17 @@ import Button from "./UI/Button";
 import Imag from "./UI/Imag";
 import type { IProduct } from "../interfaces/interface";
 import { textslice } from "../utils/Functions";
+import Colors from "./UI/Colors";
 interface Iprops {
   productLists: IProduct;
 }
 
 const ProductCard = ({ productLists }: Iprops) => {
-  const { imageURL, title, description, category, price } = productLists;
+  const { imageURL, title, description, category, price, colors } =
+    productLists;
+  const rendercolors = colors.map((color) => (
+    <Colors key={color} color={color} />
+  ));
   return (
     <div
       className="
@@ -35,11 +40,7 @@ const ProductCard = ({ productLists }: Iprops) => {
       />
       <h3 className="m-2">{title}</h3>
       <p>{textslice(description)}</p>
-      <div className="flex items-center my-4 space-x-2">
-        <span className="w-5 h-5 rounded-full bg-black cursor-pointer " />
-        <span className="w-5 h-5 rounded-full bg-red-600 cursor-pointer " />
-        <span className="w-5 h-5 rounded-full bg-gray-800 cursor-pointer " />
-      </div>
+      <div className="flex items-center my-4 space-x-2">{rendercolors}</div>
       <div className="flex items-center justify-between">
         <span>{price}$</span>
         <Imag

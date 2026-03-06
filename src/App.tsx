@@ -1,12 +1,15 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import ProductCard from "./components/ProductCard";
 import Model from "./components/UI/Model";
-import { formInputsList, productList } from "./data/index";
+import { colors, formInputsList, productList } from "./data/index";
 import Button from "./components/UI/Button";
 import Input from "./components/UI/Input";
 import type { IProduct } from "./interfaces/interface";
 import { Validtion } from "./validation";
 import ErrorMessage from "./components/ErrorMas";
+import Colors from "./components/UI/Colors";
+import { v4 as uuid } from "uuid";
+
 const App = () => {
   const defobj = {
     title: "",
@@ -21,13 +24,16 @@ const App = () => {
   };
   /* --------------------------State-------------------------------- */
   const [product, setproduct] = useState<IProduct>(defobj);
+  const [products, setproducts] = useState<IProduct[]>(productList);
   const [errors, seterrors] = useState({
     title: "",
     description: "",
     imageURL: "",
     price: "",
   });
+  const [tempcolor, settempcolor] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  console.log(tempcolor);
   /*-----------------------------HNDLER-------------------------------- */
   function closeModal() {
     setIsOpen(false);
@@ -62,14 +68,20 @@ const App = () => {
       seterrors(errors);
       return;
     }
+    setproducts((prev) => [
+      { ...product, id: uuid(), colors: tempcolor },
+      ...prev,
+    ]);
+    setproduct(defobj);
+    settempcolor([]);
+    closeModal();
   }
-
   function Cancelhandler(): void {
     setproduct(defobj);
     closeModal();
   }
   /*-----------------------------RENDER------------------------------------*/
-  const rernderList = productList.map((product) => (
+  const rernderList = products.map((product) => (
     <ProductCard key={product.id} productLists={product} />
   ));
   const renderform = formInputsList.map((form) => (
@@ -87,7 +99,19 @@ const App = () => {
       <ErrorMessage msg={errors[form.name]} />
     </div>
   ));
-
+  const rendercolors = colors.map((color) => (
+    <Colors
+      key={color}
+      color={color}
+      onClick={() => {
+        if (tempcolor.includes(color)) {
+          settempcolor((prev) => prev.filter((item) => item !== color));
+          return;
+        }
+        settempcolor((prev) => [...prev, color]);
+      }}
+    />
+  ));
   return (
     <main className="container ">
       <div className=" flex items-center justify-center">
@@ -122,7 +146,20 @@ const App = () => {
       >
         <form className="space-y-2" onSubmit={onsubmitHandler}>
           {renderform}
-
+          <div className="flex space-x-2 items-center justify-center p-2">
+            {rendercolors}
+          </div>
+          <div className="flex space-x-2 items-center justify-center p-2">
+            {tempcolor.map((color) => (
+              <span
+                key={color}
+                className="p-1 mr-1 mb-1 rounded-md text-xs text-white "
+                style={{ background: color }}
+              >
+                {color}
+              </span>
+            ))}
+          </div>
           <div className="flex items-center space-x-2 ">
             <Button
               className="bg-indigo-600 hover:bg-indigo-400"

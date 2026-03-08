@@ -273,6 +273,14 @@ const App = () => {
             "imageURL",
           )}
           {renderEditproductwitherrors("price", "product price", "price")}
+          <div className="text-black font-medium">
+            <Select
+              selected={productToEdit.category}
+              setSelected={(value) =>
+                setProductToEdit({ ...productToEdit, category: value })
+              }
+            />
+          </div>
           <div className="flex space-x-2 items-center justify-center p-2">
             {rendercolors}
           </div>

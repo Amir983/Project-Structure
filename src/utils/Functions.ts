@@ -10,3 +10,6 @@ export function textslice(text: string, max: number = 100) {
   }
   return text;
 }
+export function Numpercoma(x: string): string {
+  return x?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

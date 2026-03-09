@@ -11,7 +11,8 @@ import Colors from "./components/UI/Colors";
 import { v4 as uuid } from "uuid";
 import Select from "./components/UI/Select";
 import type { productname } from "./types";
-
+import Modal from "./components/UI/Model";
+import toast, { Toaster } from "react-hot-toast";
 const App = () => {
   const defaultProductObj = {
     title: "",
@@ -40,12 +41,16 @@ const App = () => {
   const [tempColors, setTempColor] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
+
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
   const closeModal = () => setIsOpen(false);
   const openModal = () => setIsOpen(true);
   const closeEditModal = () => setIsOpenEditModal(false);
   const openEditModal = () => setIsOpenEditModal(true);
+  const closeConfirmModal = () => setIsOpenConfirmModal(false);
+  const openConfirmModal = () => setIsOpenConfirmModal(true);
 
   // ✅ onCancel معرفة صح هنا
   const onCancel = () => {
@@ -96,7 +101,20 @@ const App = () => {
     setTempColor([]);
     closeModal();
   }
-
+  const removeHandler = () => {
+    const filter = products.filter(
+      (product) => product.id !== productToEdit.id,
+    );
+    setProducts(filter);
+    closeConfirmModal();
+    toast("Product has been deleted successfully!", {
+      icon: "👏",
+      style: {
+        backgroundColor: "#c2344d",
+        color: "white",
+      },
+    });
+  };
   function onsubmitEditHandler(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     const { title, description, price, imageURL } = productToEdit;
@@ -134,6 +152,7 @@ const App = () => {
       openEditModal={openEditModal}
       idx={idx}
       setProductToEditIdx={setProductToEditIdx}
+      openConfirmModal={openConfirmModal}
     />
   ));
 
@@ -207,6 +226,7 @@ const App = () => {
       <div className="m-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-4 p-2 rounded-md">
         {rernderList}
       </div>
+      {/* ADD PRODUCT MODAL */}
 
       <Model
         isOpen={isOpen}
@@ -254,6 +274,7 @@ const App = () => {
           </div>
         </form>
       </Model>
+      {/* EDIT PRODUCT MODAL */}
 
       <Model
         isOpen={isOpenEditModal}
@@ -315,6 +336,31 @@ const App = () => {
           </div>
         </form>
       </Model>
+
+      {/* DELETE PRODUCT CONFIRM MODAL */}
+      <Modal
+        isOpen={isOpenConfirmModal}
+        closeModal={closeConfirmModal}
+        title="Are you sure you want to remove this Product from your Store?"
+        description="Deleting this product will remove it permanently from your inventory. Any associated data, sales history, and other related information will also be deleted. Please make sure this is the intended action."
+      >
+        <div className="flex items-center space-x-3">
+          <Button
+            className="bg-[#c2344d] hover:bg-red-800"
+            onClick={removeHandler}
+          >
+            Yes, remove
+          </Button>
+          <Button
+            type="button"
+            className="bg-[#f5f5fa] hover:bg-gray-300 !text-black"
+            onClick={closeConfirmModal}
+          >
+            Cancel
+          </Button>
+        </div>
+      </Modal>
+      <Toaster position="top-center" />
     </main>
   );
 };

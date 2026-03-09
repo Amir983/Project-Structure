@@ -1,7 +1,7 @@
 import Button from "./UI/Button";
 import Imag from "./UI/Imag";
 import type { IProduct } from "../interfaces/interface";
-import { textslice } from "../utils/Functions";
+import { Numpercoma, textslice } from "../utils/Functions";
 import Colors from "./UI/Colors";
 
 interface Iprops {
@@ -10,6 +10,7 @@ interface Iprops {
   openEditModal: () => void;
   idx: number;
   setProductToEditIdx: (value: number) => void;
+  openConfirmModal: () => void;
 }
 
 const ProductCard = ({
@@ -18,20 +19,26 @@ const ProductCard = ({
   openEditModal,
   idx,
   setProductToEditIdx,
+  openConfirmModal,
 }: Iprops) => {
   const { imageURL, title, description, category, price, colors } =
     productLists;
+  /* ------- RENDER -------  */
 
   const rendercolors = colors.map((color) => (
     <Colors key={color} color={color} />
   ));
+  /* ------- HANDLER -------  */
 
   const prodctEdit = () => {
     setProductToEdit(productLists);
     openEditModal();
     setProductToEditIdx(idx);
   };
-
+  const removeproduct = () => {
+    setProductToEdit(productLists);
+    openConfirmModal();
+  };
   return (
     <div className="max-w-sm md:max-w-lg mx-auto md:mx-0 border rounded-md p-2 flex flex-col space-y-3">
       <Imag
@@ -43,11 +50,16 @@ const ProductCard = ({
       <p className="text-sm text-gray-500 break-words">
         {textslice(description)}
       </p>
-      <div className="flex items-center flex-wrap space-x-1">
-        {rendercolors}
+      <div className=" flex items-center flex-wrap space-x-1">
+        {!colors.length ? (
+          <p className="min-h-[20px]">Not available colors</p>
+        ) : (
+          rendercolors
+        )}
       </div>
+
       <div className="flex items-center justify-between">
-        <span>{price}$</span>
+        <span>${Numpercoma(price)}</span>
         <Imag
           imageURL={category.imageURL}
           Alt={category.name}
@@ -58,8 +70,8 @@ const ProductCard = ({
         <Button className="bg-indigo-600" width={"w-full"} onClick={prodctEdit}>
           Edit
         </Button>
-        <Button className="bg-red-600" width={"w-full"}>
-          Delete
+        <Button className="bg-red-600" width={"w-full"} onClick={removeproduct}>
+          Remove
         </Button>
       </div>
     </div>

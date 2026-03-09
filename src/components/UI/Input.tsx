@@ -1,6 +1,6 @@
 import type { InputHTMLAttributes } from "react";
 
-interface Iprops extends InputHTMLAttributes<HTMLInputElement> {}
+type Iprops = InputHTMLAttributes<HTMLInputElement>;
 
 const Input = ({ ...rest }: Iprops) => {
   return (

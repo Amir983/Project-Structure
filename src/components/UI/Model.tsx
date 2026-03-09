@@ -5,7 +5,7 @@ interface Iprops {
   closeModal: () => void;
   title: string;
   children: ReactNode;
-  description: string;
+  description?: string;
 }
 const Modal = ({
   isOpen,

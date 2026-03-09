@@ -3,7 +3,7 @@ import { type ReactNode, type ButtonHTMLAttributes } from "react";
 interface Iprops extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   className?: string;
-  width: "w-full" | "w-fit";
+  width?: "w-full" | "w-fit";
 }
 
 const Button = ({ children, className, width, ...rest }: Iprops) => {

@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+import { type HTMLAttributes, memo } from "react";
 
 interface Iprops extends HTMLAttributes<HTMLSpanElement> {
   color: string;
@@ -14,5 +14,5 @@ const Colors = ({ color, ...rest }: Iprops) => {
   );
 };
 
-export default Colors;
+export default memo(Colors);
 // tailwind => Bulid Time

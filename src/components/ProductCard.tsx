@@ -3,7 +3,7 @@ import Imag from "./UI/Imag";
 import type { IProduct } from "../interfaces/interface";
 import { Numpercoma, textslice } from "../utils/Functions";
 import Colors from "./UI/Colors";
-
+import { memo } from "react";
 interface Iprops {
   productLists: IProduct;
   setProductToEdit: (product: IProduct) => void;
@@ -78,4 +78,4 @@ const ProductCard = ({
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

@@ -1,4 +1,10 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  useCallback,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import ProductCard from "./components/ProductCard";
 import Model from "./components/UI/Model";
 import { categories, colors, formInputsList, productList } from "./data/index";
@@ -25,7 +31,6 @@ const App = () => {
       imageURL: "",
     },
   };
-
   const [products, setProducts] = useState<IProduct[]>(productList);
   const [product, setProduct] = useState<IProduct>(defaultProductObj);
   const [productToEdit, setProductToEdit] =
@@ -45,12 +50,12 @@ const App = () => {
 
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
-  const closeModal = () => setIsOpen(false);
+  const closeModal = useCallback(() => setIsOpen(false), []);
   const openModal = () => setIsOpen(true);
   const closeEditModal = () => setIsOpenEditModal(false);
-  const openEditModal = () => setIsOpenEditModal(true);
-  const closeConfirmModal = () => setIsOpenConfirmModal(false);
-  const openConfirmModal = () => setIsOpenConfirmModal(true);
+  const openEditModal = useCallback(() => setIsOpenEditModal(true), []);
+  const closeConfirmModal = useCallback(() => setIsOpenConfirmModal(false), []);
+  const openConfirmModal = useCallback(() => setIsOpenConfirmModal(true), []);
 
   // ✅ onCancel معرفة صح هنا
   const onCancel = () => {
@@ -62,15 +67,18 @@ const App = () => {
 
   const producthandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
-    setProduct({ ...product, [name]: value });
-    setErrors({ ...errors, [name]: "" });
+    setProduct((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const productEdithandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = event.target;
-    setProductToEdit({ ...productToEdit, [name]: value });
-    setErrors({ ...errors, [name]: "" });
-  };
+  const productEdithandler = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value, name } = event.target;
+      setProductToEdit((prev) => ({ ...prev, [name]: value }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    },
+    [],
+  );
 
   function onsubmitHandler(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
@@ -100,11 +108,18 @@ const App = () => {
     setProduct(defaultProductObj);
     setTempColor([]);
     closeModal();
+    toast("Product has been Add successfully!", {
+      icon: "👏",
+      style: {
+        backgroundColor: "#FF6E31",
+        color: "white",
+      },
+    });
   }
-  const removeHandler = () => {
-    const filter = products.filter(
-      (product) => product.id !== productToEdit.id,
-    );
+  const removeHandler = useCallback(() => {
+    const filter = (Products: IProduct[]) => {
+      return Products.filter((p) => p.id !== productToEdit.id);
+    };
     setProducts(filter);
     closeConfirmModal();
     toast("Product has been deleted successfully!", {
@@ -114,7 +129,7 @@ const App = () => {
         color: "white",
       },
     });
-  };
+  }, [productToEdit.id, closeConfirmModal]);
   function onsubmitEditHandler(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     const { title, description, price, imageURL } = productToEdit;
@@ -142,19 +157,28 @@ const App = () => {
     setProductToEdit(defaultProductObj);
     setTempColor([]);
     closeEditModal();
+    toast("Product has been updeted successfully!", {
+      icon: "👏",
+      style: {
+        backgroundColor: "#820000",
+        color: "black",
+      },
+    });
   }
 
-  const rernderList = products.map((product, idx) => (
-    <ProductCard
-      key={product.id}
-      productLists={product}
-      setProductToEdit={setProductToEdit}
-      openEditModal={openEditModal}
-      idx={idx}
-      setProductToEditIdx={setProductToEditIdx}
-      openConfirmModal={openConfirmModal}
-    />
-  ));
+  const rernderList = useMemo(() => {
+    return products.map((product, idx) => (
+      <ProductCard
+        key={product.id}
+        productLists={product}
+        setProductToEdit={setProductToEdit}
+        openEditModal={openEditModal}
+        idx={idx}
+        setProductToEditIdx={setProductToEditIdx}
+        openConfirmModal={openConfirmModal}
+      />
+    ));
+  }, [products, openEditModal, openConfirmModal]);
 
   const renderform = formInputsList.map((form) => (
     <div className="flex flex-col" key={form.id}>
@@ -172,23 +196,25 @@ const App = () => {
     </div>
   ));
 
-  const rendercolors = colors.map((color) => (
-    <Colors
-      key={color}
-      color={color}
-      onClick={() => {
-        if (tempColors.includes(color)) {
-          setTempColor((prev) => prev.filter((item) => item !== color));
-          return;
-        }
-        if (productToEdit.colors.includes(color)) {
-          setTempColor((prev) => prev.filter((item) => item !== color));
-          return;
-        }
-        setTempColor((prev) => [...prev, color]);
-      }}
-    />
-  ));
+  const rendercolors = useCallback(() => {
+    return colors.map((color) => (
+      <Colors
+        key={color}
+        color={color}
+        onClick={() => {
+          if (tempColors.includes(color)) {
+            setTempColor((prev) => prev.filter((item) => item !== color));
+            return;
+          }
+          if (productToEdit.colors.includes(color)) {
+            setTempColor((prev) => prev.filter((item) => item !== color));
+            return;
+          }
+          setTempColor((prev) => [...prev, color]);
+        }}
+      />
+    ));
+  }, [tempColors, productToEdit.colors]);
 
   const renderEditproductwitherrors = (
     id: string,
@@ -242,7 +268,7 @@ const App = () => {
             />
           </div>
           <div className="flex items-center flex-wrap space-x-1">
-            {rendercolors}
+            {rendercolors()}
           </div>
           <ErrorMessage msg={errors.colors} />
           <div className="flex items-center flex-wrap space-x-1">
@@ -303,7 +329,7 @@ const App = () => {
             />
           </div>
           <div className="flex space-x-2 items-center justify-center p-2">
-            {rendercolors}
+            {rendercolors()}
           </div>
           <ErrorMessage msg={errors.colors} />
           <div className="flex space-x-2 items-center justify-center p-2">
